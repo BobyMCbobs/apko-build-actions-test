@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    uses: BobyMCbobs/apko-build-actions-test/.github/workflows/reusable-apko-build.yml
+    uses: BobyMCbobs/apko-build-actions-test/.github/workflows/reusable-apko-build.yml@main
     with:
       imageName: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).imageName }}
       configPath: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).configPath }}
