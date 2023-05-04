@@ -49,7 +49,7 @@ jobs:
           config: ''
           multi-config: ${{ inputs.melangeConfigs }}
           sign-with-key: true
-          empty-workspace: true
+          empty-workspace: false
       - uses: chainguard-images/actions/apko-publish@main
         id: build-with-signing-key
         name: build-with-signing-key
