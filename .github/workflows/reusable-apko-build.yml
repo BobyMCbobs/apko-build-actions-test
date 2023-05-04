@@ -1,0 +1,59 @@
+name: reusable apko build
+on:
+  workflow_call:
+    inputs:
+      melangeConfigs:
+        required: false
+        type: string
+        description: |
+          a comma separated list of Melange configs.
+      imageName:
+        required: true
+        type: string
+        description: |
+          the short name for image builds.
+          e.g: nginx
+      configPath:
+        required: true
+        type: string
+        description: |
+          the relative path to an APKO config.
+          e.g: ./images/nginx/image.yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: chainguard-dev/actions/setup-melange@main
+      - uses: actions/setup-go@v4
+      - uses: sigstore/cosign-installer@main
+      - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c
+      - name: quay crane login
+        env:
+          quay-robot-token: ${{ secrets.QUAY_ROBOT_TOKEN }}
+          quay-username: ${{ secrets.QUAY_USERNAME }}
+        if: ${{ env.quay-robot-token != null && env.quay-username != null }}
+        run: |
+          echo "${{ env.quay-robot-token }}" | crane auth login --password-stdin quay.io ${{ env.quay-username }}
+      - name: Generate snapshot date
+        id: snapshot-date
+        run: |
+          echo name=date::$(date -u +%Y%m%d) >> $GITHUB_OUTPUT
+          echo name=epoch::$(date -u +%s) >> $GITHUB_OUTPUT
+        shell: bash
+      - uses: chainguard-dev/actions/melange-keygen@main
+        with:
+          signing-key-path: ${{ github.workspace }}/melange.rsa
+      - uses: chainguard-dev/actions/melange-build-pkg@main
+        with:
+          multi-config: ${{ inputs.melangeConfigs }}
+          sign-with-temporary-key: true
+          empty-workspace: true
+      - uses: chainguard-images/actions/apko-publish@main
+        id: build-with-signing-key
+        name: build-with-signing-key
+        with:
+          tag: ghcr.io/${{ github.repository }}/${{ inputs.imageName }}
+          config: ${{ inputs.configPath }}
+          source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
+          keyring-append: ${{ github.workspace }}/melange.rsa.pub

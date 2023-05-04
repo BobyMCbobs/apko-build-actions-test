@@ -1,0 +1,37 @@
+name: apko build
+
+on:
+  push: {}
+  schedule:
+    - cron: "0 0 * * MON"
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  packages: write
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mikefarah/yq@master
+      - id: set
+        run: |
+          echo "matrix=$(jq '.' -r -c <<< "$(yq e . -o json config.yaml)")" >> $GITHUB_OUTPUT
+      - name: check output
+        run: |
+          jq . <<< '${{ steps.prepare.outputs.matrix }}'
+  build:
+    needs: prepare
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    uses: BobyMCbobs/apko-build-actions-test/.github/workflows/reusable-apko-build.yml
+    with:
+      imageName: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).imageName }}
+      configPath: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).configPath }}
+      melangeConfigs: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).melangeConfigs }}

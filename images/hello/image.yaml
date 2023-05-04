@@ -1,0 +1,27 @@
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.17/main
+    - https://dl-cdn.alpinelinux.org/alpine/v3.17/community
+    - '@local /github/workspace/packages'
+  packages:
+    - alpine-baselayout-data
+    - ca-certificates-bundle
+    - hello@local
+
+environment:
+  PATH: /usr/bin
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 10000
+  users:
+    - username: nonroot
+      uid: 10000
+  run-as: nonroot
+
+entrypoint:
+  command: /usr/bin/hello
+
+archs:
+- x86_64
