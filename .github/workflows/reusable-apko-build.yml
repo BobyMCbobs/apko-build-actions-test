@@ -46,8 +46,9 @@ jobs:
           signing-key-path: ${{ github.workspace }}/melange.rsa
       - uses: chainguard-dev/actions/melange-build-pkg@main
         with:
+          config: ''
           multi-config: ${{ inputs.melangeConfigs }}
-          sign-with-temporary-key: true
+          sign-with-key: true
           empty-workspace: true
       - uses: chainguard-images/actions/apko-publish@main
         id: build-with-signing-key
