@@ -25,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: chainguard-dev/actions/setup-melange@main
+        if: ${{ inputs.melangeConfigs != null }}
       - uses: actions/setup-go@v4
       - uses: sigstore/cosign-installer@main
       - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c
@@ -45,11 +46,12 @@ jobs:
         with:
           signing-key-path: ${{ github.workspace }}/melange.rsa
       - uses: chainguard-dev/actions/melange-build-pkg@main
+        if: ${{ inputs.melangeConfigs != null }}
         with:
           config: ''
           multi-config: ${{ inputs.melangeConfigs }}
           sign-with-key: true
-          empty-workspace: false
+          empty-workspace: true
       - uses: chainguard-images/actions/apko-publish@main
         id: build-with-signing-key
         name: build-with-signing-key
