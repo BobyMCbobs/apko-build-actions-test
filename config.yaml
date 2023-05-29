@@ -1,6 +1,5 @@
 - configPath: ./images/hello/image.yaml
   imageName: hello
-  melangeConfigs:
-    - ./images/hello/pkg-hello.yaml
+  melangeConfigs: ./images/hello/pkg-hello.yaml
 - configPath: ./images/something/image.yaml
   imageName: something
