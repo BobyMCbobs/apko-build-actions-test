@@ -25,7 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: chainguard-dev/actions/setup-melange@main
-        if: ${{ inputs.melangeConfigs != null }}
       - uses: actions/setup-go@v4
       - uses: sigstore/cosign-installer@main
       - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c
