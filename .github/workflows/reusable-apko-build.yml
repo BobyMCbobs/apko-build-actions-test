@@ -23,11 +23,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: chainguard-dev/actions/setup-melange@main
-      - uses: actions/setup-go@v4
-      - uses: sigstore/cosign-installer@main
-      - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - uses: chainguard-dev/actions/setup-melange@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
+      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+      - uses: sigstore/cosign-installer@dd6b2e2b610a11fd73dd187a43d57cc1394e35f9 # v3.0.5
+      - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c # v0.3
       - name: quay crane login
         env:
           quay-robot-token: ${{ secrets.QUAY_ROBOT_TOKEN }}
@@ -41,17 +41,17 @@ jobs:
           echo name=date::$(date -u +%Y%m%d) >> $GITHUB_OUTPUT
           echo name=epoch::$(date -u +%s) >> $GITHUB_OUTPUT
         shell: bash
-      - uses: chainguard-dev/actions/melange-keygen@main
+      - uses: chainguard-dev/actions/melange-keygen@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
         with:
           signing-key-path: ${{ github.workspace }}/melange.rsa
-      - uses: chainguard-dev/actions/melange-build-pkg@main
+      - uses: chainguard-dev/actions/melange-build-pkg@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
         if: ${{ inputs.melangeConfigs != null }}
         with:
           config: ''
           multi-config: ${{ inputs.melangeConfigs }}
           sign-with-key: true
           empty-workspace: true
-      - uses: chainguard-images/actions/apko-publish@main
+      - uses: chainguard-images/actions/apko-publish@bb159715325d773d5460ed45e96c5e577f79a991 # main
         if: ${{ inputs.melangeConfigs == null }}
         id: build-without-signing-key
         name: build-without-signing-key
@@ -59,7 +59,7 @@ jobs:
           tag: ghcr.io/${{ github.repository }}/${{ inputs.imageName }}
           config: ${{ inputs.configPath }}
           source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
-      - uses: chainguard-images/actions/apko-publish@main
+      - uses: chainguard-images/actions/apko-publish@bb159715325d773d5460ed45e96c5e577f79a991 # main
         if: ${{ inputs.melangeConfigs != null }}
         id: build-with-signing-key
         name: build-with-signing-key

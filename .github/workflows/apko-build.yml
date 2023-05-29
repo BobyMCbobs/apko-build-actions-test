@@ -1,24 +1,21 @@
 name: apko build
-
 on:
   push: {}
   schedule:
     - cron: "0 0 * * MON"
   workflow_dispatch: {}
-
 permissions:
   id-token: write
   packages: write
   contents: write
-
 jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: mikefarah/yq@master
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - uses: mikefarah/yq@5ef537f3fd1a9437aa3ee44c32c6459a126efdc4 # v4.34.1
       - id: set
         run: |
           echo "matrix=$(jq '.' -r -c <<< "$(yq e . -o json config.yaml)")" >> $GITHUB_OUTPUT
