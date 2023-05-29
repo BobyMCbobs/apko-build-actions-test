@@ -53,8 +53,8 @@ jobs:
           empty-workspace: true
       - uses: chainguard-images/actions/apko-publish@main
         if: ${{ inputs.melangeConfigs == null }}
-        id: build-with-signing-key
-        name: build-with-signing-key
+        id: build-without-signing-key
+        name: build-without-signing-key
         with:
           tag: ghcr.io/${{ github.repository }}/${{ inputs.imageName }}
           config: ${{ inputs.configPath }}
