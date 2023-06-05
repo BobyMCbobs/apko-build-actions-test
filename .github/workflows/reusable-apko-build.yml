@@ -83,3 +83,22 @@ jobs:
           config: ${{ inputs.configPath }}
           source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
           keyring-append: ${{ github.workspace }}/melange.rsa.pub
+      - id: get-image
+        run: |
+          if [ -z "${{ inputs.melangeConfigs }}" ]; then
+            echo "image=${{ steps.build-without-signing-key.outputs.digest }}" >> $GITHUB_OUTPUT
+          else
+            echo "image=${{ steps.build-with-signing-key.outputs.digest }}" >> $GITHUB_OUTPUT
+          fi
+      - id: sign-images-and-attest-sbom
+        env:
+          COSIGN_YES: "true"
+          IMAGE: ${{ steps.get-image.outputs.image }}
+        run: |
+          cosign sign $IMAGE -y --recursive
+          cosign download sbom $IMAGE > /tmp/sbom-spdx.json
+          cosign attest --predicate /tmp/sbom-spdx.json $IMAGE -y --recursive
+      - name: image result
+        id: result
+        run: |
+          echo "Build, pushed and signed: $(echo ${{ steps.build.outputs.images }} | tr ',' ' ')"
