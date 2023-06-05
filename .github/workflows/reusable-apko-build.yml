@@ -53,7 +53,7 @@ jobs:
           if [ -n "${{ inputs.registryOverride }}" ]; then
             DOCKER_REPO="${{ inputs.registryOverride }}"
           fi
-          echo "docker-repo=${KO_DOCKER_REPO,,}/$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "docker-repo=${DOCKER_REPO,,}/$IMAGE_NAME" >> $GITHUB_OUTPUT
         shell: bash
       - uses: chainguard-dev/actions/melange-keygen@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
         if: ${{ inputs.melangeConfigs != '' }}
