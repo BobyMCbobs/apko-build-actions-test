@@ -58,6 +58,7 @@ jobs:
         id: build-without-signing-key
         name: build-without-signing-key
         with:
+          debug: true
           tag: ghcr.io/${{ github.repository }}/${{ inputs.imageName }}
           config: ${{ inputs.configPath }}
           source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
@@ -66,6 +67,7 @@ jobs:
         id: build-with-signing-key
         name: build-with-signing-key
         with:
+          debug: true
           tag: ghcr.io/${{ github.repository }}/${{ inputs.imageName }}
           config: ${{ inputs.configPath }}
           source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
