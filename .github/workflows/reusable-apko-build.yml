@@ -25,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: chainguard-dev/actions/setup-melange@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
+        if: ${{ inputs.melangeConfigs != null }}
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
       - uses: sigstore/cosign-installer@dd6b2e2b610a11fd73dd187a43d57cc1394e35f9 # v3.0.5
       - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c # v0.3
@@ -42,6 +43,7 @@ jobs:
           echo name=epoch::$(date -u +%s) >> $GITHUB_OUTPUT
         shell: bash
       - uses: chainguard-dev/actions/melange-keygen@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
+        if: ${{ inputs.melangeConfigs != null }}
         with:
           signing-key-path: ${{ github.workspace }}/melange.rsa
       - uses: chainguard-dev/actions/melange-build-pkg@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
