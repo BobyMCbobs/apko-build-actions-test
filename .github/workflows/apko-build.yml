@@ -29,6 +29,6 @@ jobs:
         include: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     uses: BobyMCbobs/apko-build-actions-test/.github/workflows/reusable-apko-build.yml@main
     with:
-      imageName: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).imageName }}
-      configPath: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).configPath }}
-      melangeConfigs: ${{ fromJSON(toJSON(needs.prepare.outputs.matrix)).melangeConfigs }}
+      imageName: ${{ fromJSON(toJSON(matrix)).imageName }}
+      configPath: ${{ fromJSON(toJSON(matrix)).configPath }}
+      melangeConfigs: ${{ fromJSON(toJSON(matrix)).melangeConfigs }}
