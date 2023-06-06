@@ -28,6 +28,7 @@ jobs:
         if: ${{ inputs.melangeConfigs != '' }}
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
       - uses: sigstore/cosign-installer@dd6b2e2b610a11fd73dd187a43d57cc1394e35f9 # v3.0.5
+      - uses: mikefarah/yq@5ef537f3fd1a9437aa3ee44c32c6459a126efdc4 # v4.34.1
       - uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c # v0.3
       - name: quay crane login
         env:
@@ -54,6 +55,12 @@ jobs:
             DOCKER_REPO="${{ inputs.registryOverride }}"
           fi
           echo "docker-repo=${DOCKER_REPO,,}/$IMAGE_NAME" >> $GITHUB_OUTPUT
+          ARCHES="$(yq e '.archs | join(",")' ${{ inputs.configPath }})"
+          if [ -n "$ARCHES" ]; then
+            echo "arches=$ARCHES" >> $GITHUB_OUTPUT
+          else
+            echo "arches=x86_64" >> $GITHUB_OUTPUT
+          fi
         shell: bash
       - uses: chainguard-dev/actions/melange-keygen@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
         if: ${{ inputs.melangeConfigs != '' }}
@@ -66,6 +73,7 @@ jobs:
           multi-config: ${{ inputs.melangeConfigs }}
           sign-with-key: true
           empty-workspace: true
+          archs: ${{ steps.run-info.outputs.arches }}
       - uses: chainguard-images/actions/apko-publish@bb159715325d773d5460ed45e96c5e577f79a991 # main
         if: ${{ inputs.melangeConfigs == '' }}
         id: build-without-signing-key
