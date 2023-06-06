@@ -1,8 +1,6 @@
 package:
   name: hello
   version: 2.12
-  target-architectures:
-    - x86_64
   epoch: 0
   description: "the GNU hello world program"
   copyright:
