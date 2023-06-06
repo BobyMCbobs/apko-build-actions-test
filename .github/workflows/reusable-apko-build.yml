@@ -24,8 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
-      - uses: chainguard-dev/actions/setup-melange@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
-        if: ${{ inputs.melangeConfigs != '' }}
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
       - uses: sigstore/cosign-installer@dd6b2e2b610a11fd73dd187a43d57cc1394e35f9 # v3.0.5
       - uses: mikefarah/yq@5ef537f3fd1a9437aa3ee44c32c6459a126efdc4 # v4.34.1
@@ -59,20 +57,19 @@ jobs:
             echo "arches=x86_64" >> $GITHUB_OUTPUT
           fi
         shell: bash
-      - uses: chainguard-dev/actions/melange-keygen@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
+      - name: melange-keygen
         if: ${{ inputs.melangeConfigs != '' }}
+        uses: docker://ghcr.io/chainguard-dev/melange:v0.3.2@sha256:067353708de527829fb1ce62b8e9d32a5e67f35452922bbe83f277620a75767e
         with:
-          signing-key-path: /etc/apk/keys/melange.rsa
-          install-public-key: false
-      - uses: chainguard-dev/actions/melange-build-pkg@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
-        if: ${{ inputs.melangeConfigs != null }}
+          args: keygen melange.rsa
+      - name: copy melange key to /etc/apk/keys
+        run: |
+          sudo cp melange.rsa.pub /etc/apk/keys
+      - name: melange-build
+        if: ${{ inputs.melangeConfigs != '' }}
+        uses: docker://ghcr.io/chainguard-dev/melange:v0.3.2@sha256:067353708de527829fb1ce62b8e9d32a5e67f35452922bbe83f277620a75767e
         with:
-          config: ''
-          multi-config: ${{ inputs.melangeConfigs }}
-          sign-with-key: true
-          signing-key-path: /etc/apk/keys/melange.rsa
-          empty-workspace: true
-          archs: ${{ steps.run-info.outputs.arches }}
+          args: build --arch ${{ steps.run-info.outputs.arches }} --empty-workspace --signing-key /etc/apk/keys/melange.rsa --workspace-dir ${{ github.workspace }} ${{ inputs.melangeConfigs }}
       - uses: chainguard-images/actions/apko-publish@bb159715325d773d5460ed45e96c5e577f79a991 # main
         if: ${{ inputs.melangeConfigs == '' }}
         id: build-without-signing-key
