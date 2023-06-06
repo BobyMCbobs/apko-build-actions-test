@@ -63,6 +63,7 @@ jobs:
         if: ${{ inputs.melangeConfigs != '' }}
         with:
           signing-key-path: /etc/apk/keys/melange.rsa
+          install-public-key: false
       - uses: chainguard-dev/actions/melange-build-pkg@3c8440de395c1ae0d6a15161a71d54adb235e6cb # main
         if: ${{ inputs.melangeConfigs != null }}
         with:
