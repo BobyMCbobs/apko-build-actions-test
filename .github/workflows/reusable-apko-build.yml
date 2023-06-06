@@ -66,7 +66,7 @@ jobs:
         if: ${{ inputs.melangeConfigs != '' }}
         uses: docker://ghcr.io/chainguard-dev/melange:v0.3.2@sha256:067353708de527829fb1ce62b8e9d32a5e67f35452922bbe83f277620a75767e
         with:
-          args: build --arch ${{ steps.run-info.outputs.arches }} --empty-workspace --signing-key melange.rsa --workspace-dir ${{ github.workspace }} ${{ inputs.melangeConfigs }}
+          args: build --arch ${{ steps.run-info.outputs.arches }} --empty-workspace --signing-key melange.rsa ${{ inputs.melangeConfigs }}
       - uses: chainguard-images/actions/apko-publish@bb159715325d773d5460ed45e96c5e577f79a991 # main
         if: ${{ inputs.melangeConfigs == '' }}
         id: build-without-signing-key
